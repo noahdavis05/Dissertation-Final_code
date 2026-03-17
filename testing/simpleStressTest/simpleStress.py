@@ -22,13 +22,19 @@ with open("stress-template.yaml") as f:
 
 
 for i in range (0,NUM_PODS):
-    pod["metadata"]["name"] = f"cpu-stressor-{i}"
+    pod_name = f"cpu-stressor-{i}"
+    pod["metadata"]["name"] = pod_name
 
     # convert back to yaml
     manifest = yaml.dump(pod)
 
     # apply the manifest
     subprocess.run(["kubectl", "apply", "-f", "-"], input=manifest.encode())
+
+    
+    
+
+    
 
     # sleep for random time until ready to schedule another
     time.sleep(random.randint(5, 20))
