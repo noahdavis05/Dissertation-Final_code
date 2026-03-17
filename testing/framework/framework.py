@@ -1,8 +1,6 @@
 from results import TestResults
 from telemetry import TelemetryHandler
 
-from tests.standard.profile import standardTest
-
 #import yaml 
 import subprocess
 import time
@@ -80,6 +78,7 @@ class SchedulerTester:
         monitor_thread.join()
 
         print("Finished test")
+        self.cleanup_default_namspace()
 
 
 
@@ -105,7 +104,10 @@ class SchedulerTester:
         subprocess.run(["kubectl", "delete", "pods", "--all", "-n", "default", "--now"])
 
 
-framework = SchedulerTester(standardTest)
+## choose which library we import the test from
+from tests.overRequestRandom.profile import test
+
+framework = SchedulerTester(test)
 
 framework.run_stress_ng_tests()
 

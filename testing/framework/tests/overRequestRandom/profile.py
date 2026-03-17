@@ -3,12 +3,23 @@ import subprocess
 import time
 import random
 import os
-import datetime
 
 NUM_PODS = 5
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 MANIFEST_PATH = os.path.join(current_dir, "stress-template.yaml")
+
+
+# hardcoded random request amounts to ensure that tests are consistent
+WORKLOAD_CPU_REQUESTS = [
+    107, 62, 190, 175, 164, 121, 102, 329, 94, 266, 66, 65, 97, 161, 169, 
+    308, 63, 337, 151, 329, 264, 162, 279, 192, 53, 131, 266, 224, 192, 129, 
+    160, 222, 102, 97, 244, 99, 233, 226, 185, 72, 285, 324, 113, 243, 90, 
+    332, 200, 235, 345, 148, 85, 73, 166, 198, 90, 169, 101, 244, 192, 282, 
+    236, 133, 239, 231, 157, 186, 86, 137, 323, 175, 133, 286, 244, 188, 335, 
+    162, 216, 78, 167, 66, 211, 255, 187, 83, 158, 340, 211, 158, 305, 252, 
+    284, 123, 185, 121, 176, 337, 325, 184, 349, 269
+]
 
 def test(schedulerName, results_object):
     # open the manifest
@@ -18,8 +29,20 @@ def test(schedulerName, results_object):
     pod["spec"]["schedulerName"] = schedulerName
 
     for i in range(0,NUM_PODS):
+        cpu_m = WORKLOAD_CPU_REQUESTS[i]
         pod_name = f"cpu-stressor-{i}"
         pod["metadata"]["name"] = pod_name
+
+        # over request resources
+        pod["spec"]["containers"][0]["resources"]["limits"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.5)+"m"
+        pod["spec"]["containers"][0]["resources"]["requests"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.4)+"m"
+
+        load_val = str(max(1, int(cpu_m / 10))) 
+        
+        args = pod["spec"]["containers"][0]["args"]
+        if "--cpu-load" in args:
+            idx = args.index("--cpu-load")
+            args[idx + 1] = load_val
 
         manifest = yaml.dump(pod)
         subprocess.run(["kubectl", "apply", "-f", "-"], input=manifest.encode())
@@ -42,4 +65,3 @@ def test(schedulerName, results_object):
     filename = f"results_{schedulerName}.json"
     save_path = os.path.join(current_dir, filename)
     results_object.save_logs(save_path)
-    

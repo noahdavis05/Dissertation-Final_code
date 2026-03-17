@@ -3,7 +3,6 @@ import subprocess
 import time
 import random
 import os
-import datetime
 
 NUM_PODS = 5
 
@@ -42,4 +41,3 @@ def test(schedulerName, results_object):
     filename = f"results_{schedulerName}.json"
     save_path = os.path.join(current_dir, filename)
     results_object.save_logs(save_path)
-    

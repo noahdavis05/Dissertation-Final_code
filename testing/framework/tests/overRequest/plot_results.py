@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-files = ["results_topsis-scheduler_20260317_011335.json", "results_default-scheduler_20260317_011445.json"]
+files = ["results_topsis-scheduler.json", "results_default-scheduler.json"]
 
 def plot_cpu_comparison(json_files):
     fig, axes = plt.subplots(len(json_files), 1, figsize=(12, 10), sharex=False)
