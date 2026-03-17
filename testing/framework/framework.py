@@ -13,6 +13,7 @@ import threading
 
 # globals
 CUSTOM_SCHEDULER_NAME = "topsis-scheduler"
+DEFAULT_SCHEDULER_NAME = "default-scheduler"
 
 """
 The role of this class is to run different kinds of tests on the 
@@ -28,8 +29,8 @@ class SchedulerTester:
         self.customTest = function
 
         # test results
-        self.custom_results = TestResults(schedulerName="topsis-scheduler")
-        self.default_load_balance_results = TestResults(schedulerName="default")
+        self.custom_results = TestResults(schedulerName=CUSTOM_SCHEDULER_NAME)
+        self.default_load_balance_results = TestResults(schedulerName=DEFAULT_SCHEDULER_NAME)
         self.default_bin_pack_results = TestResults()
 
         # telemetry which will run in a background thread
@@ -43,7 +44,9 @@ class SchedulerTester:
 
 
     def run_stress_ng_tests(self):
-        ## PHASE 1 - we run the test on custon scheduler
+        ###################################################
+        ## PHASE 1 - we run the test on custon scheduler ##
+        ###################################################
         self.stop_event.clear()
         monitor_thread = threading.Thread(
             target=self.monitor_nodes_telemetry, 
@@ -59,8 +62,26 @@ class SchedulerTester:
         monitor_thread.join()
 
         print("Finished test")
-        print("Schedule Events Log")
-        print(self.custom_results.schedule_event_logs)
+
+        self.cleanup_default_namspace()
+
+        ###########################################
+        ## PHASE 2 - we run on default scheduler ##
+        ###########################################
+        self.stop_event.clear()
+        monitor_thread = threading.Thread(
+            target=self.monitor_nodes_telemetry, 
+            args=(self.default_load_balance_results,)
+        )
+        monitor_thread.start()
+        self.customTest(DEFAULT_SCHEDULER_NAME, self.default_load_balance_results)
+
+        self.stop_event.set()
+        monitor_thread.join()
+
+        print("Finished test")
+
+
 
     def monitor_nodes_telemetry(self, results_object):
         print("Running background telemetry scraping")
@@ -68,7 +89,7 @@ class SchedulerTester:
             cpu_data = self.telemetry_handler.get_node_cpu_utilization()
             ram_data = self.telemetry_handler.get_ram_utilization()
 
-            print(cpu_data, ram_data)
+            #print(cpu_data, ram_data)
 
             # both are in dicts
             for key, value in cpu_data.items():
@@ -77,7 +98,7 @@ class SchedulerTester:
                 results_object.add_telemetry_logs(value, ram_val, key.split(":")[0])
 
             time.sleep(5)
-            print("Added values to the logs ")
+            #print("Added values to the logs ")
 
     def cleanup_default_namspace(self):
         print("cleaning default namespace")

@@ -15,6 +15,8 @@ def standardTest(schedulerName, results_object):
     with open(MANIFEST_PATH) as f:
         pod = yaml.safe_load(f)
 
+    pod["spec"]["schedulerName"] = schedulerName
+
     for i in range(0,NUM_PODS):
         pod_name = f"cpu-stressor-{i}"
         pod["metadata"]["name"] = pod_name
