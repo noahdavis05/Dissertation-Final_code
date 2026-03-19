@@ -18,7 +18,7 @@ import (
 	v1listers "k8s.io/client-go/listers/core/v1"
 )
 
-func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1listers.NodeLister) {
+func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1listers.NodeLister, schedulerName string) {
 	nodes, err := nodeLister.List(labels.Everything())
 	if err != nil {
 		fmt.Printf("failed to list nodes: %v\n", err)
@@ -46,8 +46,20 @@ func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1lis
 	algorithm.FilterNodes(&fuzzyDM, podRequest, clusterLimits)
 	psm.FilteredFuzzyDM = dashboard.JsonCopy(fuzzyDM)
 
-	// run the selection
-	selectedNodeName := algorithm.SelectNode(fuzzyDM, &psm)
+	// run the selection using correct algorithm either fuzzy-topsis, topsis, or custom fuzzy-topsis
+	// this is used for casting comparisons in my report. These algorithms will use the same decision matrix
+	// as it contains all the correct telemetry, but will only use the necassary elements from it.
+	selectedNodeName := ""
+	switch schedulerName {
+	case "fuzzy-topsis-scheduler":
+		fmt.Println("Standard fuzzy TOPSIS")
+	case "topsis-scheduler":
+		fmt.Println("TOPSIS scheduler")
+		selectedNodeName = algorithm.TopsisSelectNode(fuzzyDM)
+	case "custom-fuzzy-topsis-scheduler": // this is the final algorithm which I came up with
+		fmt.Println("Custom fuzzy TOPSIS scheduler")
+		selectedNodeName = algorithm.SelectNode(fuzzyDM, &psm)
+	}
 
 	psm.NodeName = selectedNodeName
 

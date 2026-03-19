@@ -77,9 +77,9 @@ func main() {
 			// actual Pod type
 			pod := obj.(*corev1.Pod)
 
-			if pod.Spec.NodeName == "" && pod.Spec.SchedulerName == "topsis-scheduler" {
+			if pod.Spec.NodeName == "" && (pod.Spec.SchedulerName == "fuzzy-topsis-scheduler" || pod.Spec.SchedulerName == "topsis-scheduler" || pod.Spec.SchedulerName == "custom-fuzzy-topsis-scheduler") {
 				fmt.Println("Unscheduled pod detected")
-				scheduler.SchedulePod(client, pod, nodeLister)
+				scheduler.SchedulePod(client, pod, nodeLister, pod.Spec.SchedulerName)
 			}
 		},
 	})
