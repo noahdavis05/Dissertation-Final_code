@@ -53,6 +53,7 @@ func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1lis
 	switch schedulerName {
 	case "fuzzy-topsis-scheduler":
 		fmt.Println("Standard fuzzy TOPSIS")
+		selectedNodeName = algorithm.FuzzyTopsisSelectNode(fuzzyDM)
 	case "topsis-scheduler":
 		fmt.Println("TOPSIS scheduler")
 		selectedNodeName = algorithm.TopsisSelectNode(fuzzyDM)
