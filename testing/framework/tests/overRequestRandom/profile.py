@@ -21,7 +21,7 @@ WORKLOAD_CPU_REQUESTS = [
     284, 123, 185, 121, 176, 337, 325, 184, 349, 269
 ]
 
-def test(schedulerName, results_object):
+def test(schedulerName, results_object, mode):
     # open the manifest
     with open(MANIFEST_PATH) as f:
         pod = yaml.safe_load(f)
@@ -45,14 +45,24 @@ def test(schedulerName, results_object):
             args[idx + 1] = load_val
 
         manifest = yaml.dump(pod)
-        subprocess.run(["kubectl", "apply", "-f", "-"], input=manifest.encode())
+        if mode == "microk8s":
+            subprocess.run(["microk8s","kubectl", "apply", "-f", "-"], input=manifest.encode())
+        else:
+            subprocess.run(["kubectl", "apply", "-f", "-"], input=manifest.encode())
+
 
         # get what node our pod was scheduled on
         time.sleep(1)
-        cmd = [
-                "kubectl", "get", "pod", pod_name, 
-                "-o", "jsonpath={.spec.nodeName}"
-            ]
+        if mode == "microk8s":
+            cmd = [
+                    "microk8s","kubectl", "get", "pod", pod_name, 
+                    "-o", "jsonpath={.spec.nodeName}"
+                ]
+        else:
+            cmd = [
+                    "kubectl", "get", "pod", pod_name, 
+                    "-o", "jsonpath={.spec.nodeName}"
+                ]
         
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         node_name = result.stdout.strip()

@@ -10,8 +10,17 @@ import threading
 
 
 # globals
-CUSTOM_SCHEDULER_NAME = "topsis-scheduler"
+CUSTOM_SCHEDULER_NAME = "custom-fuzzy-topsis-scheduler"
 DEFAULT_SCHEDULER_NAME = "default-scheduler"
+STANDARD_TOPSIS_NAME = "topsis-scheduler"
+STANDARD_FUZZY_TOPSIS_NAME = "fuzzy-topsis-scheduler"
+
+
+SCHEDULERS = [CUSTOM_SCHEDULER_NAME, STANDARD_TOPSIS_NAME, STANDARD_FUZZY_TOPSIS_NAME, DEFAULT_SCHEDULER_NAME]
+
+MODE = "kind" # modes can be kind (kubernetes in docker), or microk8s
+# this changes the command based on what environment we are tetsing in
+
 
 """
 The role of this class is to run different kinds of tests on the 
@@ -43,42 +52,32 @@ class SchedulerTester:
 
     def run_stress_ng_tests(self):
         ###################################################
-        ## PHASE 1 - we run the test on custon scheduler ##
+        ## iterate over all schedulers and run same test ##
         ###################################################
-        self.stop_event.clear()
-        monitor_thread = threading.Thread(
-            target=self.monitor_nodes_telemetry, 
-            args=(self.custom_results,)
-        )
-        monitor_thread.start()
+        for scheduler in SCHEDULERS:
+            print("Running Test on " + scheduler)
+            self.stop_event.clear()
+            monitor_thread = threading.Thread(
+                target=self.monitor_nodes_telemetry, 
+                args=(self.custom_results,)
+            )
+            monitor_thread.start()
 
-        # run test
-        self.customTest(CUSTOM_SCHEDULER_NAME, self.custom_results)
+            # run test
+            self.customTest(scheduler, self.custom_results, MODE)
 
-        # stop monitoring
-        self.stop_event.set()
-        monitor_thread.join()
+            # stop monitoring
+            self.stop_event.set()
+            monitor_thread.join()
 
-        print("Finished test")
+            print("Finished test")
 
-        self.cleanup_default_namspace()
+            self.cleanup_default_namspace(MODE)
+            if MODE == "kind":
+                self.wait_for_idle(5)
+            else:
+                self.wait_for_idle(20)
 
-        ###########################################
-        ## PHASE 2 - we run on default scheduler ##
-        ###########################################
-        self.stop_event.clear()
-        monitor_thread = threading.Thread(
-            target=self.monitor_nodes_telemetry, 
-            args=(self.default_load_balance_results,)
-        )
-        monitor_thread.start()
-        self.customTest(DEFAULT_SCHEDULER_NAME, self.default_load_balance_results)
-
-        self.stop_event.set()
-        monitor_thread.join()
-
-        print("Finished test")
-        self.cleanup_default_namspace()
 
 
 
@@ -99,18 +98,42 @@ class SchedulerTester:
             time.sleep(5)
             #print("Added values to the logs ")
 
-    def cleanup_default_namspace(self):
+    def cleanup_default_namspace(self, mode):
         print("cleaning default namespace")
-        subprocess.run(["kubectl", "delete", "pods", "--all", "-n", "default", "--now"])
+        if mode == "microk8s":
+            subprocess.run(["microk8s","kubectl", "delete", "pods", "--all", "-n", "default", "--now"])
+        else:
+            subprocess.run(["kubectl", "delete", "pods", "--all", "-n", "default", "--now"])
+
+    
+    def wait_for_idle(self, threshold=5.0):
+        print(f"Waiting for nodes to drop below " + str(threshold) + " % CPU...")
+        while True:
+            cpu_data = self.telemetry_handler.get_node_cpu_utilization()
+            if all(float(val) <= threshold for val in cpu_data.values()):
+                print("Nodes are idle. Starting next test.")
+                break
+            time.sleep(10)
 
 
 ## choose which library we import the test from
-from tests.overRequestRandom.profile import test
+from tests.standardRandom.profile import test as test1
+from tests.standard.profile import test as test2
+from tests.overRequest.profile import test as test3
+from tests.overRequestRandom.profile import test as test4
 
-framework = SchedulerTester(test)
+framework1 = SchedulerTester(test1)
+framework2 = SchedulerTester(test2)
+framework3 = SchedulerTester(test3)
+framework4 = SchedulerTester(test4)
 
-framework.run_stress_ng_tests()
 
-#framework.cleanup_default_namspace()
+
+framework1.run_stress_ng_tests()
+framework2.run_stress_ng_tests()
+framework3.run_stress_ng_tests()
+framework4.run_stress_ng_tests()
+
+#framework.cleanup_default_namspace(MODE)
 
 
