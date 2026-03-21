@@ -12,7 +12,7 @@ MANIFEST_PATH = os.path.join(current_dir, "stress-template.yaml")
 
 # hardcoded random request amounts to ensure that tests are consistent
 WORKLOAD_CPU_REQUESTS = [
-    107, 62, 190, 175, 164, 121, 102, 329, 94, 266, 66, 65, 97, 161, 169, 
+    307, 362, 390, 275, 264, 121, 102, 329, 94, 266, 66, 65, 97, 161, 169, 
     308, 63, 337, 151, 329, 264, 162, 279, 192, 53, 131, 266, 224, 192, 129, 
     160, 222, 102, 97, 244, 99, 233, 226, 185, 72, 285, 324, 113, 243, 90, 
     332, 200, 235, 345, 148, 85, 73, 166, 198, 90, 169, 101, 244, 192, 282, 
@@ -34,8 +34,7 @@ def test(schedulerName, results_object, mode):
         pod["metadata"]["name"] = pod_name
 
         # over request resources
-        pod["spec"]["containers"][0]["resources"]["limits"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.5)+"m"
-        pod["spec"]["containers"][0]["resources"]["requests"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.4)+"m"
+        pod["spec"]["containers"][0]["resources"]["requests"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.5)+"m"
 
         load_val = str(max(1, int(cpu_m / 10))) 
         

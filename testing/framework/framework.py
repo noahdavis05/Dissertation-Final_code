@@ -55,16 +55,17 @@ class SchedulerTester:
         ## iterate over all schedulers and run same test ##
         ###################################################
         for scheduler in SCHEDULERS:
+            newResults = TestResults(schedulerName=scheduler)
             print("Running Test on " + scheduler)
             self.stop_event.clear()
             monitor_thread = threading.Thread(
                 target=self.monitor_nodes_telemetry, 
-                args=(self.custom_results,)
+                args=(newResults,)
             )
             monitor_thread.start()
 
             # run test
-            self.customTest(scheduler, self.custom_results, MODE)
+            self.customTest(scheduler, newResults, MODE)
 
             # stop monitoring
             self.stop_event.set()
@@ -123,17 +124,15 @@ from tests.overRequest.profile import test as test3
 from tests.overRequestRandom.profile import test as test4
 
 framework1 = SchedulerTester(test1)
-framework2 = SchedulerTester(test2)
-framework3 = SchedulerTester(test3)
+#framework2 = SchedulerTester(test2)
+#framework3 = SchedulerTester(test3)
 framework4 = SchedulerTester(test4)
 
 
 
-framework1.run_stress_ng_tests()
-framework2.run_stress_ng_tests()
-framework3.run_stress_ng_tests()
+#framework1.run_stress_ng_tests()
 framework4.run_stress_ng_tests()
 
-#framework.cleanup_default_namspace(MODE)
+#framework4.cleanup_default_namspace(MODE)
 
 
