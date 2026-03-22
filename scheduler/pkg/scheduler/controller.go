@@ -46,6 +46,13 @@ func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1lis
 	algorithm.FilterNodes(&fuzzyDM, podRequest, clusterLimits)
 	psm.FilteredFuzzyDM = dashboard.JsonCopy(fuzzyDM)
 
+	// now we need to add current requests onto the current usage.
+	// e.g. if we schedule 5 pods at once, they won't have started
+	// and telemetry won't have picked these up and we may overpack a node
+	// therefore we need to manually add these values.
+	algorithm.ApplyManualRequests(&fuzzyDM, clusterLimits)
+	algorithm.DisplayFuzzyDM(fuzzyDM)
+
 	// run the selection using correct algorithm either fuzzy-topsis, topsis, or custom fuzzy-topsis
 	// this is used for casting comparisons in my report. These algorithms will use the same decision matrix
 	// as it contains all the correct telemetry, but will only use the necassary elements from it.
@@ -65,7 +72,7 @@ func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1lis
 	psm.NodeName = selectedNodeName
 
 	fmt.Printf("Selected Node : %v\n", selectedNodeName)
-	telemetry.PodScheduled(selectedNodeName)
+	telemetry.PodScheduled(selectedNodeName, podRequest)
 	bindPod(client, pod, selectedNodeName)
 
 	// now send this to the web UI via websocket

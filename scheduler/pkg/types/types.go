@@ -12,6 +12,7 @@ type NodeTelemetryMetrics struct {
 	CPU           TelemetryMetric
 	RAM           TelemetryMetric
 	LastScheduled time.Time // will default to  0001-01-01 00:00:00 +0000 UTC before anything has been scheduled
+	PodsScheduled []ScheduledPod
 }
 
 type FuzzyNumber struct {
@@ -55,4 +56,9 @@ type ClusterInfo struct {
 type PodRequest struct {
 	CPU int64
 	RAM int64
+}
+
+type ScheduledPod struct {
+	Requests  PodRequest
+	Timestamp time.Time
 }

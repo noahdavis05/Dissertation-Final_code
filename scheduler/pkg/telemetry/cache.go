@@ -39,12 +39,16 @@ func GetFullCache() map[string]types.NodeTelemetryMetrics {
 	return globalCache.data
 }
 
-func PodScheduled(nodeName string) {
+func PodScheduled(nodeName string, pod types.PodRequest) {
 	globalCache.Lock() // full lock to write
 	defer globalCache.Unlock()
 
 	metrics := globalCache.data[nodeName]
 	metrics.LastScheduled = time.Now()
+	metrics.PodsScheduled = append(metrics.PodsScheduled, types.ScheduledPod{
+		Requests:  pod,
+		Timestamp: time.Now(),
+	})
 	globalCache.data[nodeName] = metrics
 	fmt.Printf("Updated Node: %v scheduled time. Node looks like : %v\n", nodeName, globalCache.data[nodeName])
 }

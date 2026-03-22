@@ -25,22 +25,6 @@ func FilterNodes(fuzzyDM *types.FuzzyDecisionMatrix, podRequests types.PodReques
 	}
 }
 
-// returns true if node should be filtered out
-func filterNode(fuzzyDM *types.FuzzyDecisionMatrix, name string, podRequests types.PodRequest, clusterLimits types.ClusterInfo) bool {
-	// calculate the CPU and RAM request as a percentage of the nodes total CPU and RAM limit
-	percentageCPURequest := (float64(podRequests.CPU) / float64(clusterLimits.CPULimits[name])) * 100
-	percentageRAMRequest := (float64(podRequests.RAM) / float64(clusterLimits.RAMLimits[name])) * 100
-
-	if fuzzyDM.Data[name]["CPU"].B > fuzzyDM.NegativeIdeals["CPU"].C-float64(percentageCPURequest) {
-		return true
-	}
-
-	if fuzzyDM.Data[name]["RAM"].B > fuzzyDM.NegativeIdeals["RAM"].C-float64(percentageRAMRequest) {
-		return true
-	}
-	return false
-}
-
 func selectNode(fuzzyDM types.FuzzyDecisionMatrix, scheduleData *dashboard.PodScheduledMessage, debug bool) string {
 	// all our values in fuzzyDM are percentages e.g. between 0 and 100
 	// therefore already normalised/on same scale
@@ -111,43 +95,4 @@ func calculateDistance(fuzzyNum types.FuzzyNumber, fuzzyIdeal types.FuzzyNumber)
 	totalSquaredDistances := (dist1 + dist2 + dist3) / 3
 
 	return math.Sqrt(totalSquaredDistances)
-}
-
-func weightNodes(fuzzyDM *types.FuzzyDecisionMatrix) {
-	// the desicion matrix is passed as pointer so doesn't need to be changed
-	for k, v := range fuzzyDM.Data {
-		for key, value := range v {
-			// key is field e.g. CPU
-			// value is the FuzzyNumber we need to update
-			weights := fuzzyDM.Weights[key]
-			weightedFuzzyNum := types.FuzzyNumber{
-				A: value.A * weights.A,
-				B: value.B * weights.B,
-				C: value.C * weights.C,
-			}
-			fuzzyDM.Data[k][key] = weightedFuzzyNum
-		}
-	}
-}
-
-func weightIdeals(fuzzyDM *types.FuzzyDecisionMatrix) {
-	for key, value := range fuzzyDM.PositiveIdeals {
-		weights := fuzzyDM.Weights[key]
-		weightedFuzzyNum := types.FuzzyNumber{
-			A: value.A * weights.A,
-			B: value.B * weights.B,
-			C: value.C * weights.C,
-		}
-		fuzzyDM.PositiveIdeals[key] = weightedFuzzyNum
-	}
-
-	for key, value := range fuzzyDM.NegativeIdeals {
-		weights := fuzzyDM.Weights[key]
-		weightedFuzzyNum := types.FuzzyNumber{
-			A: value.A * weights.A,
-			B: value.B * weights.B,
-			C: value.C * weights.C,
-		}
-		fuzzyDM.NegativeIdeals[key] = weightedFuzzyNum
-	}
 }

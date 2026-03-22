@@ -148,9 +148,14 @@ func subTwoMinBias(promAPI promv1.API, oldNodeData types.NodeTelemetryMetrics, n
 			High: meanRAM + (oldRAMRange / 2),
 		},
 		LastScheduled: oldNodeData.LastScheduled,
+		PodsScheduled: oldNodeData.PodsScheduled,
 	}
 }
 
+// no need to keep the list of scheduled pods in this
+// as we only need the ones scheduled in less than the last minute
+// if we are in this function there can't have been a pod scheduled
+// in the last min.
 func subFiveMinBias(promAPI promv1.API, oldNodeData types.NodeTelemetryMetrics, node *v1.Node, lastScheduled time.Time) types.NodeTelemetryMetrics {
 	seconds := int64(time.Since(oldNodeData.LastScheduled).Seconds())
 	nodeIP := getNodeAddress(node)

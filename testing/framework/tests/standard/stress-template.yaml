@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: placeholder
+  name: placeholder2
 spec:
   schedulerName: topsis-scheduler
   restartPolicy: Never

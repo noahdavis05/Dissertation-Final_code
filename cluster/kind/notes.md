@@ -11,3 +11,5 @@
   - `kubectl port-forward -n monitoring svc/kube-prom-stack-kube-prome-prometheus 9090:9090` to port forward for running scheduler locally.
 
 
+- Delete teastore `kubectl delete deployments,services,hpa -l app=teastore`
+

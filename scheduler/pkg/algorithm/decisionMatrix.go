@@ -7,6 +7,7 @@ import (
 	"scheduler/pkg/telemetry"
 	"scheduler/pkg/types"
 	"text/tabwriter"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 )
@@ -149,4 +150,97 @@ func buildTestingDM() types.FuzzyDecisionMatrix {
 	}
 
 	return fuzzyDM
+}
+
+// returns true if node should be filtered out
+func filterNode(fuzzyDM *types.FuzzyDecisionMatrix, name string, podRequests types.PodRequest, clusterLimits types.ClusterInfo) bool {
+	// calculate the CPU and RAM request as a percentage of the nodes total CPU and RAM limit
+	percentageCPURequest := (float64(podRequests.CPU) / float64(clusterLimits.CPULimits[name])) * 100
+	percentageRAMRequest := (float64(podRequests.RAM) / float64(clusterLimits.RAMLimits[name])) * 100
+
+	if fuzzyDM.Data[name]["CPU"].B > fuzzyDM.NegativeIdeals["CPU"].C-float64(percentageCPURequest) {
+		return true
+	}
+
+	if fuzzyDM.Data[name]["RAM"].B > fuzzyDM.NegativeIdeals["RAM"].C-float64(percentageRAMRequest) {
+		return true
+	}
+	return false
+}
+
+func weightNodes(fuzzyDM *types.FuzzyDecisionMatrix) {
+	// the desicion matrix is passed as pointer so doesn't need to be changed
+	for k, v := range fuzzyDM.Data {
+		for key, value := range v {
+			// key is field e.g. CPU
+			// value is the FuzzyNumber we need to update
+			weights := fuzzyDM.Weights[key]
+			weightedFuzzyNum := types.FuzzyNumber{
+				A: value.A * weights.A,
+				B: value.B * weights.B,
+				C: value.C * weights.C,
+			}
+			fuzzyDM.Data[k][key] = weightedFuzzyNum
+		}
+	}
+}
+
+func weightIdeals(fuzzyDM *types.FuzzyDecisionMatrix) {
+	for key, value := range fuzzyDM.PositiveIdeals {
+		weights := fuzzyDM.Weights[key]
+		weightedFuzzyNum := types.FuzzyNumber{
+			A: value.A * weights.A,
+			B: value.B * weights.B,
+			C: value.C * weights.C,
+		}
+		fuzzyDM.PositiveIdeals[key] = weightedFuzzyNum
+	}
+
+	for key, value := range fuzzyDM.NegativeIdeals {
+		weights := fuzzyDM.Weights[key]
+		weightedFuzzyNum := types.FuzzyNumber{
+			A: value.A * weights.A,
+			B: value.B * weights.B,
+			C: value.C * weights.C,
+		}
+		fuzzyDM.NegativeIdeals[key] = weightedFuzzyNum
+	}
+}
+
+// will apply manual requests ontop of the current telemetry
+// for nodes scheduled in the last minute. This will stop nodes
+// getting over filled when multiple pods scheduled at once.
+func ApplyManualRequests(fuzzyDM *types.FuzzyDecisionMatrix, clusterLimits types.ClusterInfo) {
+
+	allMetrics := telemetry.GetFullCache()
+
+	for node, metrics := range allMetrics {
+		// iterate over last scheduled
+		for _, pod := range metrics.PodsScheduled {
+			if time.Since(pod.Timestamp) < time.Minute {
+				// pod was scheduled within last minute so we must manually add
+				// the requests to the current decision matrix values
+				cpuPercent := calculateManualRequest(clusterLimits.CPULimits[node], pod.Requests.CPU)
+				ramPercent := calculateManualRequest(clusterLimits.RAMLimits[node], pod.Requests.RAM)
+
+				// add this onto the fuzzyDM
+				cpuMetric := fuzzyDM.Data[node]["CPU"]
+				cpuMetric.A += cpuPercent
+				cpuMetric.B += cpuPercent
+				cpuMetric.C += cpuPercent
+				fuzzyDM.Data[node]["CPU"] = cpuMetric
+
+				// add this onto the fuzzyDM
+				ramMetric := fuzzyDM.Data[node]["RAM"]
+				ramMetric.A += ramPercent
+				ramMetric.B += ramPercent
+				ramMetric.C += ramPercent
+				fuzzyDM.Data[node]["RAM"] = ramMetric
+			}
+		}
+	}
+}
+
+func calculateManualRequest(limit int64, request int64) float64 {
+	return (float64(request) / float64(limit)) * 100
 }

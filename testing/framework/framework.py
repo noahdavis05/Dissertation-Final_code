@@ -131,8 +131,8 @@ framework4 = SchedulerTester(test4)
 
 
 #framework1.run_stress_ng_tests()
-framework4.run_stress_ng_tests()
+#framework4.run_stress_ng_tests()
 
-#framework4.cleanup_default_namspace(MODE)
+framework4.cleanup_default_namspace(MODE)
 
 
