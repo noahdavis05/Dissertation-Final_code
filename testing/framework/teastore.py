@@ -38,14 +38,22 @@ def deploy_teastore(schedulerName):
                     "limits": {"cpu": p["cpu_lim"], "memory": p["mem_lim"]}
                 }
                 
-                # add startup probe so when pods autoscale they don't create an avalanche
-                # because pods use all their CPU booting.
                 port = 3306 if "db" in name else 8080
+                
+                
                 container["startupProbe"] = {
-                    "httpGet": {"path": "/", "port": port},
-                    "failureThreshold": 30,
+                    "tcpSocket": {"port": port},
+                    "initialDelaySeconds": 30,
+                    "failureThreshold": 30,   
+                    "periodSeconds": 5   
+                }
+
+                
+                container["readinessProbe"] = {
+                    "tcpSocket": {"port": port},
                     "periodSeconds": 10
                 }
+
             print(f"Set resources for {name}")
 
         modified_docs.append(doc)
