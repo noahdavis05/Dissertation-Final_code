@@ -18,13 +18,6 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
-  behavior:
-    scaleUp:
-      stabilizationWindowSeconds: 30 # load must be consistently over 50% for 30 seconds for autoscaling
-      policies:
-      - type: Pods
-        value: 1
-        periodSeconds: 60 # just add 1 pod per min max
 ---
 # auth
 apiVersion: autoscaling/v2
@@ -105,10 +98,3 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
-  behavior:
-    scaleUp:
-      stabilizationWindowSeconds: 45 
-      policies:
-      - type: Pods
-        value: 1
-        periodSeconds: 90
