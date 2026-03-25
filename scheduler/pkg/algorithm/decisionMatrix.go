@@ -215,6 +215,12 @@ func ApplyManualRequests(fuzzyDM *types.FuzzyDecisionMatrix, clusterLimits types
 	allMetrics := telemetry.GetFullCache()
 
 	for node, metrics := range allMetrics {
+
+		_, exists := fuzzyDM.Data[node]
+		if !exists {
+			// means our node got filtered out previously
+			continue
+		}
 		// iterate over last scheduled
 		for _, pod := range metrics.PodsScheduled {
 			if time.Since(pod.Timestamp) < time.Minute {
