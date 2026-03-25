@@ -18,6 +18,15 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      policies:
+      - type: Pods
+        value: 1             
+        periodSeconds: 30    
+    scaleDown:
+      stabilizationWindowSeconds: 300 
 ---
 # auth
 apiVersion: autoscaling/v2
@@ -38,6 +47,15 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      policies:
+      - type: Pods
+        value: 1             
+        periodSeconds: 30    
+    scaleDown:
+      stabilizationWindowSeconds: 300 
 ---
 # image
 apiVersion: autoscaling/v2
@@ -58,6 +76,15 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      policies:
+      - type: Pods
+        value: 1             
+        periodSeconds: 30    
+    scaleDown:
+      stabilizationWindowSeconds: 300 
 ---
 # persistence
 apiVersion: autoscaling/v2
@@ -78,6 +105,15 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      policies:
+      - type: Pods
+        value: 1             
+        periodSeconds: 30    
+    scaleDown:
+      stabilizationWindowSeconds: 300 
 ---
 # recommender
 apiVersion: autoscaling/v2
@@ -98,3 +134,12 @@ spec:
       target:
         type: Utilization
         averageUtilization: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      policies:
+      - type: Pods
+        value: 1             
+        periodSeconds: 30    
+    scaleDown:
+      stabilizationWindowSeconds: 300 
