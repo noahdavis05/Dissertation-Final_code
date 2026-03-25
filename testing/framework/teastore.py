@@ -14,7 +14,7 @@ RESOURCE_MAPPING = {
     "teastore-recommender":  {"cpu": "400m", "mem": "512Mi"},
 }
 
-def deploy_teastore_for_research():
+def deploy_teastore(schedulerName):
     print("Fetching TeaStore manifests...")
     resp = requests.get(URL)
     docs = list(yaml.safe_load_all(resp.text))
@@ -26,7 +26,7 @@ def deploy_teastore_for_research():
         name = doc["metadata"]["name"]
         spec = doc["spec"]["template"]["spec"]
         
-        spec["schedulerName"] = "topsis-scheduler"
+        spec["schedulerName"] = schedulerName
         
 
         res = RESOURCE_MAPPING.get(name, {"cpu": "200m", "mem": "256Mi"})
@@ -42,6 +42,3 @@ def deploy_teastore_for_research():
 
     full_yaml = yaml.dump_all(docs)
     subprocess.run(["kubectl", "apply", "-f", "-"], input=full_yaml.encode())
-
-if __name__ == "__main__":
-    deploy_teastore_for_research()

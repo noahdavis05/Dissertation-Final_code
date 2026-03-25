@@ -50,7 +50,7 @@ class SchedulerTester:
             self.run_stress_ng_tests()
 
 
-    def run_stress_ng_tests(self):
+    def run_stress_tests(self):
         ###################################################
         ## iterate over all schedulers and run same test ##
         ###################################################
@@ -78,8 +78,6 @@ class SchedulerTester:
                 self.wait_for_idle(5)
             else:
                 self.wait_for_idle(20)
-
-
 
 
     def monitor_nodes_telemetry(self, results_object):
@@ -119,20 +117,16 @@ class SchedulerTester:
 
 ## choose which library we import the test from
 from tests.standardRandom.profile import test as test1
-from tests.standard.profile import test as test2
-from tests.overRequest.profile import test as test3
-from tests.overRequestRandom.profile import test as test4
+from tests.overRequestRandom.profile import test as test2
 
 framework1 = SchedulerTester(test1)
-#framework2 = SchedulerTester(test2)
-#framework3 = SchedulerTester(test3)
-framework4 = SchedulerTester(test4)
+framework2 = SchedulerTester(test2)
 
 
 
-#framework1.run_stress_ng_tests()
-#framework4.run_stress_ng_tests()
+framework1.run_stress_ng_tests()
+framework2.run_stress_ng_tests()
 
-framework4.cleanup_default_namspace(MODE)
+framework2.cleanup_default_namspace(MODE)
 
 
