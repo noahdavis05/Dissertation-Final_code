@@ -59,4 +59,7 @@ def deploy_teastore(schedulerName):
         modified_docs.append(doc)
 
     full_yaml = yaml.dump_all(modified_docs)
-    subprocess.run(["kubectl", "apply", "-f", "-"], input=full_yaml.encode())
+    subprocess.run(["microk8s","kubectl", "apply", "-f", "-"], input=full_yaml.encode())
+
+
+deploy_teastore("custom-fuzzy-topsis-scheduler")
