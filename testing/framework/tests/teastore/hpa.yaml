@@ -17,16 +17,16 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 0 
+      stabilizationWindowSeconds: 60 
       policies:
       - type: Pods
         value: 1             
-        periodSeconds: 30    
-    scaleDown:
-      stabilizationWindowSeconds: 300 
+        periodSeconds: 45
+    scaleDown:         
+      stabilizationWindowSeconds: 240
 ---
 # auth
 apiVersion: autoscaling/v2
@@ -46,16 +46,16 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 0 
+      stabilizationWindowSeconds: 60 
       policies:
       - type: Pods
         value: 1             
-        periodSeconds: 30    
-    scaleDown:
-      stabilizationWindowSeconds: 300 
+        periodSeconds: 45
+    scaleDown:         
+      stabilizationWindowSeconds: 240 
 ---
 # image
 apiVersion: autoscaling/v2
@@ -75,16 +75,16 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 0 
+      stabilizationWindowSeconds: 60 
       policies:
       - type: Pods
         value: 1             
-        periodSeconds: 30    
-    scaleDown:
-      stabilizationWindowSeconds: 300 
+        periodSeconds: 45
+    scaleDown:         
+      stabilizationWindowSeconds: 240 
 ---
 # persistence
 apiVersion: autoscaling/v2
@@ -104,16 +104,16 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 0 
+      stabilizationWindowSeconds: 60 
       policies:
       - type: Pods
         value: 1             
-        periodSeconds: 30    
-    scaleDown:
-      stabilizationWindowSeconds: 300 
+        periodSeconds: 45
+    scaleDown:         
+      stabilizationWindowSeconds: 240
 ---
 # recommender
 apiVersion: autoscaling/v2
@@ -133,13 +133,13 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 0 
+      stabilizationWindowSeconds: 60 
       policies:
       - type: Pods
         value: 1             
-        periodSeconds: 30    
-    scaleDown:
-      stabilizationWindowSeconds: 300 
+        periodSeconds: 45
+    scaleDown:         
+      stabilizationWindowSeconds: 240

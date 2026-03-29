@@ -16,7 +16,7 @@ function App() {
   const [telemetryLive, setTelemetryLive] = useState([]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8090/ws");
+    const ws = new WebSocket("ws://192.168.0.251:8090/ws");
 
     ws.onopen = () => {
       console.log("Connected to WebSocket");
