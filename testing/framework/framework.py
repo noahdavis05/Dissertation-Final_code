@@ -6,7 +6,10 @@ import subprocess
 import time
 from datetime import datetime
 import random
+from datetime import datetime, timezone
 import threading
+import json
+import os
 
 
 # globals
@@ -20,6 +23,8 @@ SCHEDULERS = [CUSTOM_SCHEDULER_NAME, STANDARD_TOPSIS_NAME, STANDARD_FUZZY_TOPSIS
 
 MODE = "kind" # modes can be kind (kubernetes in docker), or microk8s
 # this changes the command based on what environment we are tetsing in
+
+CURRENT_DIR = current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 """
@@ -43,6 +48,9 @@ class SchedulerTester:
         # telemetry which will run in a background thread
         self.telemetry_handler = TelemetryHandler()
         self.stop_event = threading.Event()
+
+        # number of scheduled pods
+        self.scheduled_pods_num = 0
 
     
     def run_tests(self):
@@ -79,6 +87,49 @@ class SchedulerTester:
             else:
                 self.wait_for_idle(20)
 
+    def run_boutique_tests(self):
+         ###################################################
+        ## iterate over all schedulers and run same test ##
+        ###################################################
+        for scheduler in SCHEDULERS:
+            newResults = TestResults(schedulerName=scheduler)
+            print("Running Test on " + scheduler)
+            self.stop_event.clear()
+            monitor_thread = threading.Thread(
+                target=self.monitor_nodes_telemetry, 
+                args=(newResults,)
+            )
+            monitor_thread.start()
+
+            schedule_thread = threading.Thread(
+                target=self.detect_scheduled_pod,
+                args=(newResults,)
+            )
+            schedule_thread.start()
+
+            # run test
+            self.customTest(scheduler, CURRENT_DIR)
+
+            # stop monitoring
+            self.stop_event.set()
+            monitor_thread.join()
+            schedule_thread.join()
+
+            print("Finished test")
+
+            filepath = CURRENT_DIR + "/results/" + scheduler + ".json"
+
+            newResults.save_logs(filepath)
+
+            self.cleanup_default_deployments()
+
+            self.scheduled_pods_num = 0
+
+            if MODE == "kind":
+                self.wait_for_idle(5)
+            else:
+                self.wait_for_idle(20)
+
 
     def monitor_nodes_telemetry(self, results_object):
         print("Running background telemetry scraping")
@@ -104,8 +155,14 @@ class SchedulerTester:
         else:
             subprocess.run(["kubectl", "delete", "pods", "--all", "-n", "default", "--now"])
 
+    def cleanup_default_deployments(self):
+        print("Removign all deployments")
+        subprocess.run(["kubectl", "delete", "deployment", "--all"])
+
     
     def wait_for_idle(self, threshold=5.0):
+        # minimum of 60 second wait
+        time.sleep(60)
         print(f"Waiting for nodes to drop below " + str(threshold) + " % CPU...")
         while True:
             cpu_data = self.telemetry_handler.get_node_cpu_utilization()
@@ -115,10 +172,58 @@ class SchedulerTester:
             time.sleep(10)
 
 
+    def detect_scheduled_pod(self, results_object):
+        while not self.stop_event.is_set():
+            time.sleep(10)
+            command = ["kubectl", "get", "pods", "-o", "json"]
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            json_result = json.loads(result.stdout)
+
+            pods = json_result.get("items", [])
+            now = datetime.now(timezone.utc)
+            
+            count = len(pods)
+            if count > self.scheduled_pods_num:
+                # means that pods have been scheduled since last check
+                pod_difference = count - self.scheduled_pods_num
+
+                sorted_pods = []
+
+                for pod in pods:
+                    node = pod.get("spec", {}).get("nodeName")
+                    if not node:
+                        node = "Not Scheduled"
+                    creation_str = pod["metadata"].get("creationTimestamp")
+                    creation_time = datetime.strptime(creation_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+                    age_seconds = int((now - creation_time).total_seconds())
+                    sorted_pods.append((node, age_seconds))
+                
+                # now sort the pods by age_seconds ascending
+                sorted_pods.sort(key=lambda x: x[1])
+                sorted_pods = sorted_pods[0:pod_difference]
+
+                # now log these results
+                for item in sorted_pods:
+                    results_object.add_schedule_event(item[0])
+                    print("Pod scheduled to node: " + item[0])
+                    self.scheduled_pods_num += 1
+
+                
+        
+
+
+            
+
+
+
 ## choose which library we import the test from
+
 from tests.standardRandom.profile import test as test1
 from tests.overRequestRandom.profile import test as test2
 
+from tests.boutique.test_1 import boutique_load_test
+
+"""
 framework1 = SchedulerTester(test1)
 framework2 = SchedulerTester(test2)
 
@@ -128,5 +233,8 @@ framework1.run_stress_ng_tests()
 framework2.run_stress_ng_tests()
 
 framework2.cleanup_default_namspace(MODE)
+"""
 
+framework = SchedulerTester(boutique_load_test)
+framework.run_boutique_tests()
 

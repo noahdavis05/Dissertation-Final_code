@@ -5,13 +5,13 @@ import requests
 URL = "https://raw.githubusercontent.com/DescartesResearch/TeaStore/master/examples/kubernetes/teastore-clusterip.yaml"
 
 POLICY = {
-    "teastore-webui":       {"cpu_req": "400m", "cpu_lim": "500m", "mem_req": "384Mi", "mem_lim": "512Mi"},
-    "teastore-auth":        {"cpu_req": "300m", "cpu_lim": "400m", "mem_req": "128Mi", "mem_lim": "256Mi"},
-    "teastore-image":       {"cpu_req": "300m", "cpu_lim": "400m", "mem_req": "256Mi", "mem_lim": "512Mi"},
-    "teastore-persistence": {"cpu_req": "300m", "cpu_lim": "400m", "mem_req": "384Mi", "mem_lim": "512Mi"},
+    "teastore-webui":       {"cpu_req": "600m", "cpu_lim": "800m", "mem_req": "768Mi", "mem_lim": "1Gi"},
+    "teastore-auth":        {"cpu_req": "300m", "cpu_lim": "400m", "mem_req": "512Mi", "mem_lim": "1Gi"},
+    "teastore-image":       {"cpu_req": "300m", "cpu_lim": "400m", "mem_req": "512Mi", "mem_lim": "1Gi"},
+    "teastore-persistence": {"cpu_req": "300m", "cpu_lim": "400m", "mem_req": "512Mi", "mem_lim": "1Gi"},
     "teastore-recommender": {"cpu_req": "500m", "cpu_lim": "700m", "mem_req": "512Mi", "mem_lim": "1Gi"},
     "teastore-db":          {"cpu_req": "400m", "cpu_lim": "700m", "mem_req": "512Mi", "mem_lim": "1Gi"},
-    "teastore-registry":    {"cpu_req": "150m",  "cpu_lim": "300m", "mem_req": "128Mi", "mem_lim": "256Mi"},
+    "teastore-registry":    {"cpu_req": "150m", "cpu_lim": "300m", "mem_req": "256Mi", "mem_lim": "512Mi"},
 }
 
 def deploy_teastore(schedulerName):
