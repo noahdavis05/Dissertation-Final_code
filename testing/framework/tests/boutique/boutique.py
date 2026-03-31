@@ -1,13 +1,17 @@
 import yaml
 import subprocess
 import requests
+import os
 
-URL = "https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml"
+FILE_PATH = "deployment.yaml"
 
 def deploy_online_boutique(scheduler_name):
-    resp = requests.get(URL)
+    if not os.path.exists(FILE_PATH):
+        print(f"Error: {FILE_PATH} not found")
+        return
 
-    docs = list(yaml.safe_load_all(resp.text))
+    with open(FILE_PATH, 'r') as f:
+        docs = list(yaml.safe_load_all(f))
     modified_docs = []
 
     for doc in docs:
@@ -25,7 +29,7 @@ def deploy_online_boutique(scheduler_name):
     
     try:
         subprocess.run(
-            ["kubectl", "apply", "-f", "-"], 
+            ["microk8s","kubectl", "apply", "-f", "-"], 
             input=full_yaml.encode(), 
             check=True
         )

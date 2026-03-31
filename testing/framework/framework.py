@@ -166,7 +166,7 @@ class SchedulerTester:
     def detect_scheduled_pod(self, results_object):
         while not self.stop_event.is_set():
             time.sleep(10)
-            command = ["kubectl", "get", "pods", "-o", "json"]
+            command = ["microk8s","kubectl", "get", "pods", "-o", "json"]
             result = subprocess.run(command, capture_output=True, text=True, check=True)
             json_result = json.loads(result.stdout)
 
@@ -227,5 +227,5 @@ framework2.cleanup_default_namspace(MODE)
 """
 
 framework = SchedulerTester(boutique_load_test)
-framework.run_boutique_tests("custom-fuzzy-topsis-scheduler")
+framework.run_boutique_test("custom-fuzzy-topsis-scheduler")
 

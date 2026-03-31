@@ -13,16 +13,16 @@ def boutique_load_test(scheduler_name, save_dir):
     deploy_online_boutique(scheduler_name)
 
     # sleep for 1 min while initial deployment is deployed.
-    time.sleep(120)
+    time.sleep(50)
 
     # start load testing using the locust script
     locust_command = [
         "locust",
         "-f", locust_file,      
         "--headless",           
-        "-u", "50",            
+        "-u", "500",            
         "-r", "2",            
-        "--run-time", "1m",     
+        "--run-time", "5m",     
         "--host", "http://192.168.0.200/", 
         "--csv", save_dir + "/results/" + scheduler_name + "-results-boutique"
     ]
