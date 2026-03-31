@@ -21,7 +21,7 @@ STANDARD_FUZZY_TOPSIS_NAME = "fuzzy-topsis-scheduler"
 
 SCHEDULERS = [CUSTOM_SCHEDULER_NAME, STANDARD_TOPSIS_NAME, STANDARD_FUZZY_TOPSIS_NAME, DEFAULT_SCHEDULER_NAME]
 
-MODE = "kind" # modes can be kind (kubernetes in docker), or microk8s
+MODE = "microk8s" # modes can be kind (kubernetes in docker), or microk8s
 # this changes the command based on what environment we are tetsing in
 
 CURRENT_DIR = current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -87,48 +87,39 @@ class SchedulerTester:
             else:
                 self.wait_for_idle(20)
 
-    def run_boutique_tests(self):
-         ###################################################
-        ## iterate over all schedulers and run same test ##
-        ###################################################
-        for scheduler in SCHEDULERS:
-            newResults = TestResults(schedulerName=scheduler)
-            print("Running Test on " + scheduler)
-            self.stop_event.clear()
-            monitor_thread = threading.Thread(
-                target=self.monitor_nodes_telemetry, 
-                args=(newResults,)
-            )
-            monitor_thread.start()
+    def run_boutique_test(self, scheduler):
+        newResults = TestResults(schedulerName=scheduler)
+        print("Running Test on " + scheduler)
+        self.stop_event.clear()
+        monitor_thread = threading.Thread(
+            target=self.monitor_nodes_telemetry, 
+            args=(newResults,)
+        )
+        monitor_thread.start()
 
-            schedule_thread = threading.Thread(
-                target=self.detect_scheduled_pod,
-                args=(newResults,)
-            )
-            schedule_thread.start()
+        schedule_thread = threading.Thread(
+            target=self.detect_scheduled_pod,
+            args=(newResults,)
+        )
+        schedule_thread.start()
 
-            # run test
-            self.customTest(scheduler, CURRENT_DIR)
+        # run test
+        self.customTest(scheduler, CURRENT_DIR)
 
-            # stop monitoring
-            self.stop_event.set()
-            monitor_thread.join()
-            schedule_thread.join()
+        # stop monitoring
+        self.stop_event.set()
+        monitor_thread.join()
+        schedule_thread.join()
 
-            print("Finished test")
+        print("Finished test")
 
-            filepath = CURRENT_DIR + "/results/" + scheduler + ".json"
+        filepath = CURRENT_DIR + "/results/" + scheduler + ".json"
 
-            newResults.save_logs(filepath)
+        newResults.save_logs(filepath)
 
-            self.cleanup_default_deployments()
+        self.cleanup_default_deployments()
 
-            self.scheduled_pods_num = 0
-
-            if MODE == "kind":
-                self.wait_for_idle(5)
-            else:
-                self.wait_for_idle(20)
+        self.scheduled_pods_num = 0
 
 
     def monitor_nodes_telemetry(self, results_object):
@@ -157,7 +148,7 @@ class SchedulerTester:
 
     def cleanup_default_deployments(self):
         print("Removign all deployments")
-        subprocess.run(["kubectl", "delete", "deployment", "--all"])
+        subprocess.run(["microk8s","kubectl", "delete", "deployment", "--all"])
 
     
     def wait_for_idle(self, threshold=5.0):
@@ -236,5 +227,5 @@ framework2.cleanup_default_namspace(MODE)
 """
 
 framework = SchedulerTester(boutique_load_test)
-framework.run_boutique_tests()
+framework.run_boutique_tests("custom-fuzzy-topsis-scheduler")
 

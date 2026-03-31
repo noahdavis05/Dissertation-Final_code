@@ -23,7 +23,7 @@ def boutique_load_test(scheduler_name, save_dir):
         "-u", "50",            
         "-r", "2",            
         "--run-time", "1m",     
-        "--host", "http://localhost:9001", 
+        "--host", "http://192.168.0.200/", 
         "--csv", save_dir + "/results/" + scheduler_name + "-results-boutique"
     ]
 
