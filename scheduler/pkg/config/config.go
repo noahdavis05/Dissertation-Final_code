@@ -23,25 +23,25 @@ var (
 var (
 	// TOPSIS ideals
 	PosCPUIdeal = types.FuzzyNumber{
-		A: 75,
-		B: 75,
-		C: 75,
+		A: 70,
+		B: 70,
+		C: 70,
 	}
 	NegCPUIdeal = types.FuzzyNumber{
-		A: 85,
-		B: 85,
-		C: 85,
+		A: 80,
+		B: 80,
+		C: 80,
 	}
 
 	PosRAMIdeal = types.FuzzyNumber{
-		A: 75,
-		B: 75,
-		C: 75,
+		A: 70,
+		B: 70,
+		C: 70,
 	}
 	NegRAMIdeal = types.FuzzyNumber{
-		A: 85,
-		B: 85,
-		C: 85,
+		A: 80,
+		B: 80,
+		C: 80,
 	}
 
 	PosCPURangeIdeal = types.FuzzyNumber{

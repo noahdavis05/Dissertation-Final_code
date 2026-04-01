@@ -241,8 +241,8 @@ func nodeTelemetryAll(prompApi promv1.API, nodeIP string, seconds int64) types.N
 func requestNodeTelemetry(promApi promv1.API) map[string]types.NodeTelemetryMetrics {
 	queries := []telemetryQuery{
 		{`avg by (instance) (100 - (rate(node_cpu_seconds_total{mode="idle"}[1m]) * 100))`, "CPU", "Mean"},
-		{`min_over_time((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[30s])) * 100))[1m:15s])`, "CPU", "Low"},
-		{`max_over_time((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[30s])) * 100))[1m:15s])`, "CPU", "High"},
+		{`min_over_time((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100))[1m:15s])`, "CPU", "Low"},
+		{`max_over_time((100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100))[1m:15s])`, "CPU", "High"},
 		{`100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))`, "RAM", "Mean"},
 		{`min_over_time((100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)))[1m:15s])`, "RAM", "Low"},
 		{`max_over_time((100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)))[1m:15s])`, "RAM", "High"},
