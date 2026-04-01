@@ -104,7 +104,25 @@ func getPodRequests(pod *corev1.Pod) types.PodRequest {
 	var totalCPU resource.Quantity
 	var totalMem resource.Quantity
 
-	// get the requests for all containers within pod
+	// try and get annotation requests.
+	trueCPU, cpuExists := pod.Annotations["scheduler.noah.io/true-cpu-request"]
+	trueMem, memExists := pod.Annotations["scheduler.noah.io/true-mem-request"]
+
+	if cpuExists && memExists {
+		qCPU, errCPU := resource.ParseQuantity(trueCPU)
+		qMem, errMem := resource.ParseQuantity(trueMem)
+
+		if errCPU == nil && errMem == nil {
+			fmt.Printf("Successfully collected annotation requests\n\n")
+			return types.PodRequest{
+				CPU: qCPU.MilliValue(),
+				RAM: qMem.Value(),
+			}
+		}
+	}
+
+	// falls back to getting default requests
+	fmt.Printf("Fall back to default requests\n\n")
 	for _, container := range pod.Spec.Containers {
 		totalCPU.Add(*container.Resources.Requests.Cpu())
 		totalMem.Add(*container.Resources.Requests.Memory())

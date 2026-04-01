@@ -32,6 +32,9 @@ spec:
     metadata:
       labels:
         app: currencyservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "100mm"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: currencyservice
       terminationGracePeriodSeconds: 5
@@ -66,8 +69,8 @@ spec:
             port: 7000
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: 10m
+            memory: 6Mi
           limits:
             cpu: 200m
             memory: 128Mi
@@ -109,6 +112,8 @@ spec:
         app: loadgenerator
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        scheduler.noah.io/true-cpu-request: "300m"
+        scheduler.noah.io/true-mem-request: "256Mi"
     spec:
       serviceAccountName: loadgenerator
       terminationGracePeriodSeconds: 5
@@ -168,8 +173,8 @@ spec:
           value: "1"
         resources:
           requests:
-            cpu: 300m
-            memory: 256Mi
+            cpu: 10m
+            memory: 20Mi
           limits:
             cpu: 500m
             memory: 512Mi
@@ -193,6 +198,9 @@ spec:
     metadata:
       labels:
         app: productcatalogservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "100m"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: productcatalogservice
       terminationGracePeriodSeconds: 5
@@ -226,8 +234,8 @@ spec:
             port: 3550
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 200m
             memory: 128Mi
@@ -266,6 +274,9 @@ spec:
     metadata:
       labels:
         app: checkoutservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "100m"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: checkoutservice
       securityContext:
@@ -308,8 +319,8 @@ spec:
             value: "cartservice:7070"
           resources:
             requests:
-              cpu: 100m
-              memory: 64Mi
+              cpu: 10m
+              memory: 10Mi
             limits:
               cpu: 200m
               memory: 128Mi
@@ -348,6 +359,9 @@ spec:
     metadata:
       labels:
         app: shippingservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "100m"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: shippingservice
       securityContext:
@@ -381,8 +395,8 @@ spec:
             port: 50051
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 200m
             memory: 128Mi
@@ -421,6 +435,9 @@ spec:
     metadata:
       labels:
         app: cartservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "200m"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: cartservice
       terminationGracePeriodSeconds: 5
@@ -446,8 +463,8 @@ spec:
           value: "redis-cart:6379"
         resources:
           requests:
-            cpu: 200m
-            memory: 64Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 300m
             memory: 128Mi
@@ -495,6 +512,9 @@ spec:
     metadata:
       labels:
         app: redis-cart
+      annotations:
+        scheduler.noah.io/true-cpu-request: "70m"
+        scheduler.noah.io/true-mem-request: "200Mi"
     spec:
       securityContext:
         fsGroup: 1000
@@ -564,6 +584,9 @@ spec:
     metadata:
       labels:
         app: emailservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "300m"
+        scheduler.noah.io/true-mem-request: "128Mi"
     spec:
       serviceAccountName: emailservice
       terminationGracePeriodSeconds: 5
@@ -599,8 +622,8 @@ spec:
             port: 8080
         resources:
           requests:
-            cpu: 300m
-            memory: 128Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 500m
             memory: 256Mi
@@ -639,6 +662,9 @@ spec:
     metadata:
       labels:
         app: paymentservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "100m"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: paymentservice
       terminationGracePeriodSeconds: 5
@@ -672,8 +698,8 @@ spec:
             port: 50051
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 200m
             memory: 128Mi
@@ -714,6 +740,8 @@ spec:
         app: frontend
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        scheduler.noah.io/true-cpu-request: "100m"
+        scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: frontend
       securityContext:
@@ -785,8 +813,8 @@ spec:
           #   value: "" # This value would look like "http://123.123.123"
           resources:
             requests:
-              cpu: 100m
-              memory: 64Mi
+              cpu: 10m
+              memory: 10Mi
             limits:
               cpu: 200m
               memory: 128Mi
@@ -840,6 +868,9 @@ spec:
     metadata:
       labels:
         app: recommendationservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "300m"
+        scheduler.noah.io/true-mem-request: "320Mi"
     spec:
       serviceAccountName: recommendationservice
       terminationGracePeriodSeconds: 5
@@ -877,8 +908,8 @@ spec:
           value: "1"
         resources:
           requests:
-            cpu: 300m
-            memory: 320Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 500m
             memory: 550Mi
@@ -917,6 +948,9 @@ spec:
     metadata:
       labels:
         app: adservice
+      annotations:
+        scheduler.noah.io/true-cpu-request: "200m"
+        scheduler.noah.io/true-mem-request: "180Mi"
     spec:
       serviceAccountName: adservice
       terminationGracePeriodSeconds: 5
@@ -942,8 +976,8 @@ spec:
           value: "9555"
         resources:
           requests:
-            cpu: 200m
-            memory: 180Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
             cpu: 300m
             memory: 300Mi
