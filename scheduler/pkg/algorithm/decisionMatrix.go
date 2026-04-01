@@ -223,7 +223,7 @@ func ApplyManualRequests(fuzzyDM *types.FuzzyDecisionMatrix, clusterLimits types
 		}
 		// iterate over last scheduled
 		for _, pod := range metrics.PodsScheduled {
-			if time.Since(pod.Timestamp) < time.Second*40 {
+			if time.Since(pod.Timestamp) < time.Second*60 {
 				// pod was scheduled within last minute so we must manually add
 				// the requests to the current decision matrix values
 				cpuPercent := calculateManualRequest(clusterLimits.CPULimits[node], pod.Requests.CPU)
