@@ -47,7 +47,7 @@ func SchedulePod(client *kubernetes.Clientset, pod *corev1.Pod, nodeLister v1lis
 	// and telemetry won't have picked these up and we may overpack a node
 	// therefore we need to manually add these values.
 	algorithm.ApplyManualRequests(&fuzzyDM, clusterLimits)
-	algorithm.DisplayFuzzyDM(fuzzyDM)
+	psm.ManualFuzzyDM = dashboard.JsonCopy(fuzzyDM)
 
 	// filter the nodes
 	algorithm.FilterNodes(&fuzzyDM, podRequest, clusterLimits)

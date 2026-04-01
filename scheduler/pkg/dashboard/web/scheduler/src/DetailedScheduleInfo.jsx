@@ -7,7 +7,7 @@ function DetailedScheduleInfo({ data, index }) {
   if (index == null || !data) return <p>No Schedule Selected</p>;
 
   const payload = data[index].payload;
-  const { initialFuzzyDM, filteredFuzzyDM, weightedFuzzyDM, telemetryCache, nodeScores, ...rest } = payload;
+  const { initialFuzzyDM, filteredFuzzyDM, weightedFuzzyDM, telemetryCache, nodeScores, manualFuzzyDM, ...rest } = payload;
 
   return (
     <div className="card">
@@ -18,6 +18,7 @@ function DetailedScheduleInfo({ data, index }) {
         <NodeInfoTable {...rest} />
         <TelemetryCacheTable telemetryCache={telemetryCache} />
         <FuzzyDecisionMatrix matrix={initialFuzzyDM} title="Initial Fuzzy DM" />
+        <FuzzyDecisionMatrix matrix={manualFuzzyDM} title="Manual additions" />
         <FuzzyDecisionMatrix matrix={filteredFuzzyDM} title="Filtered Fuzzy DM" />
         <FuzzyDecisionMatrix matrix={weightedFuzzyDM} title="Weighted Fuzzy DM" />
 

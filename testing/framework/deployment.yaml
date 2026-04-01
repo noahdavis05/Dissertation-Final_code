@@ -33,7 +33,7 @@ spec:
       labels:
         app: currencyservice
       annotations:
-        scheduler.noah.io/true-cpu-request: "100mm"
+        scheduler.noah.io/true-cpu-request: "100m"
         scheduler.noah.io/true-mem-request: "64Mi"
     spec:
       serviceAccountName: currencyservice

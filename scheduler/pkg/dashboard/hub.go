@@ -31,6 +31,9 @@ type PodScheduledMessage struct {
 	// initial fuzzy Decision Matrix
 	InitialFuzzyDM types.FuzzyDecisionMatrix `json:"initialFuzzyDM"`
 
+	// fuzzy DM after having manual requests added
+	ManualFuzzyDM types.FuzzyDecisionMatrix `json:"manualFuzzyDM"`
+
 	// Fuzzy DM after filtering
 	FilteredFuzzyDM types.FuzzyDecisionMatrix `json:"filteredFuzzyDM"`
 
