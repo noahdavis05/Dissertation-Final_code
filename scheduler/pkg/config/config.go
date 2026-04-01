@@ -80,14 +80,14 @@ var (
 	}
 
 	CPURangeWeights = types.FuzzyNumber{
-		A: 1.5,
-		B: 1.5,
-		C: 1.5,
+		A: 0.8,
+		B: 0.8,
+		C: 0.8,
 	}
 
 	RAMRangeWeights = types.FuzzyNumber{
-		A: 1.5,
-		B: 1.5,
-		C: 1.5,
+		A: 0.8,
+		B: 0.8,
+		C: 0.8,
 	}
 )

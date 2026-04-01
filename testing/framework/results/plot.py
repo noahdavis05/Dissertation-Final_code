@@ -76,4 +76,4 @@ def plot_cpu_and_pods(json_path):
     print(f"Graph successfully saved as: {output_filename}")
 
 if __name__ == "__main__":
-    plot_cpu_and_pods("custom-fuzzy-topsis-scheduler2.json")
+    plot_cpu_and_pods("topsis-scheduler.json")
