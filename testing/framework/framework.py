@@ -17,9 +17,10 @@ CUSTOM_SCHEDULER_NAME = "custom-fuzzy-topsis-scheduler"
 DEFAULT_SCHEDULER_NAME = "default-scheduler"
 STANDARD_TOPSIS_NAME = "topsis-scheduler"
 STANDARD_FUZZY_TOPSIS_NAME = "fuzzy-topsis-scheduler"
+DEFAULT_BIN_PACK_NAME = "bin-packing-scheduler"
 
 
-SCHEDULERS = [CUSTOM_SCHEDULER_NAME, STANDARD_TOPSIS_NAME, STANDARD_FUZZY_TOPSIS_NAME, DEFAULT_SCHEDULER_NAME]
+SCHEDULERS = [CUSTOM_SCHEDULER_NAME, STANDARD_TOPSIS_NAME, STANDARD_FUZZY_TOPSIS_NAME, DEFAULT_SCHEDULER_NAME, DEFAULT_BIN_PACK_NAME]
 
 MODE = "microk8s" # modes can be kind (kubernetes in docker), or microk8s
 # this changes the command based on what environment we are tetsing in
@@ -227,5 +228,5 @@ framework2.cleanup_default_namspace(MODE)
 """
 
 framework = SchedulerTester(boutique_load_test)
-framework.run_boutique_test("custom-fuzzy-topsis-scheduler")
+#framework.run_boutique_test("custom-fuzzy-topsis-scheduler")
 
