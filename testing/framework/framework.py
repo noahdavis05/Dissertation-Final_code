@@ -153,8 +153,8 @@ class SchedulerTester:
 
     
     def wait_for_idle(self, threshold=5.0):
-        # minimum of 60 second wait
-        time.sleep(60)
+        # minimum of 5 min wait to ensure all history is cleared from telemetry
+        time.sleep(300)
         print(f"Waiting for nodes to drop below " + str(threshold) + " % CPU...")
         while True:
             cpu_data = self.telemetry_handler.get_node_cpu_utilization()
