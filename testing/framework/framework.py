@@ -227,6 +227,7 @@ framework2.run_stress_ng_tests()
 framework2.cleanup_default_namspace(MODE)
 """
 
-framework = SchedulerTester(boutique_load_test)
+framework = SchedulerTester(test2)
+framework.run_stress_tests()
 #framework.run_boutique_test("custom-fuzzy-topsis-scheduler")
 

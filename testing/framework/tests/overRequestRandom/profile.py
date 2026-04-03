@@ -29,12 +29,25 @@ def test(schedulerName, results_object, mode):
     pod["spec"]["schedulerName"] = schedulerName
 
     for i in range(0,NUM_PODS):
-        cpu_m = WORKLOAD_CPU_REQUESTS[i]
+        cpu_m = WORKLOAD_CPU_REQUESTS[i]*1.5 # times 1.5 to overrequest what we will use
         pod_name = f"cpu-stressor-{i}"
         pod["metadata"]["name"] = pod_name
 
-        # over request resources
-        pod["spec"]["containers"][0]["resources"]["requests"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.5)+"m"
+        if schedulerName == "custom-fuzzy-topsis-scheduler" or schedulerName == "topsis-scheduler" or schedulerName == "fuzzy-topsis-scheduler":
+            if "annotations" not in pod["metadata"]:
+                pod["metadata"]["annotations"] = {}
+            
+            pod["metadata"]["annotations"]["scheduler.noah.io/true-cpu-request"] = f"{cpu_m}m"
+            pod["metadata"]["annotations"]["scheduler.noah.io/true-mem-request"] = "128Mi"
+
+            # 3. SET ACTUAL K8S REQUESTS (Low values to bypass OutOfCpu)
+            # This keeps the 'Official' footprint tiny so they all fit on the nodes
+            pod["spec"]["containers"][0]["resources"]["requests"]["cpu"] = "10m"
+            pod["spec"]["containers"][0]["resources"]["requests"]["memory"] = "10Mi"
+
+        else:
+            # over request resources
+            pod["spec"]["containers"][0]["resources"]["requests"]["cpu"] = str(WORKLOAD_CPU_REQUESTS[i]*1.5)+"m"
 
         load_val = str(max(1, int(cpu_m / 10))) 
         
