@@ -1,0 +1,295 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: frontend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue  
+        averageValue: 50m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: recommendation-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: recommendationservice
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue  
+        averageValue: 50m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: productcatalog-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: productcatalogservice
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue  
+        averageValue: 50m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: currency-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: currencyservice
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue
+        averageValue: 50m 
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cart-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cartservice
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue
+        averageValue: 75m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: checkout-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: checkoutservice
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue
+        averageValue: 50m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: payment-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: paymentservice
+  minReplicas: 2
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue
+        averageValue: 50m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: shipping-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: shippingservice
+  minReplicas: 2
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue
+        averageValue: 50m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 
+      selectPolicy: Max
+      policies:
+      - type: Percent
+        value: 900   
+        periodSeconds: 15
+      - type: Pods
+        value: 10    
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300 
+      selectPolicy: Min
+      policies:
+      - type: Percent
+        value: 10  
+        periodSeconds: 60
