@@ -2,7 +2,6 @@
 A custom Kubernetes scheduler which utilises telemetry and the fuzzy TOPSIS MCDM (multi criteria decision making) framework, to bin pack stable nodes and avoid unstable nodes.
 
 ## Table of Contents
-## Table of Contents
 * [Architecture](#architecture)
 * [Usage](#usage)
     * [Cluster](#cluster)
